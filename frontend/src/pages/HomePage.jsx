@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function HomePage() {
   const { user, logout } = useAuth();
@@ -11,46 +12,53 @@ export default function HomePage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "16px",
-        fontFamily: "Outfit, sans-serif",
-        background: "var(--bg-primary)",
-        color: "var(--text)",
-      }}
-    >
-      <span style={{ fontSize: "48px" }}>👋</span>
-      <h1 style={{ fontSize: "28px", fontWeight: 700 }}>
-        Hey, {user?.fullName}!
-      </h1>
-      <p style={{ color: "var(--text-muted)" }}>
-        You're logged in as @{user?.username}
-      </p>
-      <p style={{ color: "var(--text-faint)", fontSize: "14px" }}>
-        The full feed is coming on Day 4 🚀
-      </p>
-      <button
-        onClick={handleLogout}
+    <div className="app-container">
+      <header className="app-header glass">
+        <Link to="/home" className="logo">
+          <span className="logo-icon">◈</span>
+          <span className="logo-text gradient-text">SocialSphere</span>
+        </Link>
+        <div className="header-actions">
+          <ThemeToggle />
+          <button onClick={handleLogout} className="btn-ghost">
+            Log out
+          </button>
+        </div>
+      </header>
+
+      <main
         style={{
-          marginTop: "8px",
-          padding: "10px 24px",
-          background: "var(--danger)",
-          color: "#fff",
-          border: "none",
-          borderRadius: "10px",
-          cursor: "pointer",
-          fontFamily: "inherit",
-          fontWeight: 600,
-          fontSize: "14px",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "16px",
+          padding: "20px",
+          textAlign: "center",
         }}
       >
-        Log out
-      </button>
+        <span style={{ fontSize: "64px" }}>👋</span>
+        <h1 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-1px" }}>
+          Hey, <span className="gradient-text">{user?.fullName}</span>!
+        </h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "18px" }}>
+          You're logged in as @{user?.username}
+        </p>
+        <div 
+          className="card" 
+          style={{ 
+            marginTop: "24px", 
+            maxWidth: "400px",
+            background: "var(--bg-elevated)" 
+          }}
+        >
+          <p style={{ color: "var(--text-muted)" }}>
+            The full feed and dashboard features are coming soon. For now, enjoy the 
+            brand new <strong>Bright Mode</strong>! ✨
+          </p>
+        </div>
+      </main>
     </div>
   );
 }

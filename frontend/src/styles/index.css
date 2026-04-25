@@ -7,6 +7,75 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+  /* --- LIGHT MODE (Default) --- */
+  /* Background layers */
+  --bg-primary: #fcfcfd;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f8fafc;
+  --bg-hover: #f1f5f9;
+
+  /* Borders */
+  --border: #f1f5f9;
+  --border-subtle: #f8fafc;
+
+  /* Brand accent — violet */
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-light: #7c3aed;
+  --accent-glow: rgba(124, 58, 237, 0.08);
+
+  /* Semantic colors */
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.08);
+
+  /* Text */
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  /* Shadows (Softer for premium feel) */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.06);
+  --shadow-accent: 0 4px 24px rgba(124, 58, 237, 0.1);
+
+  /* Spacing scale (Constant) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+
+  /* Border radius (Constant) */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* Transitions (Constant) */
+  --transition: all 0.2s ease;
+  --transition-slow: all 0.35s ease;
+
+  /* Layout (Constant) */
+  --sidebar-width: 260px;
+  --max-content-width: 680px;
+
+  /* Glass effect defaults */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: var(--border);
+
+  /* Auth branding */
+  --auth-gradient: linear-gradient(145deg, #7c3aed 0%, #a78bfa 100%);
+  --auth-text: #ffffff;
+  --auth-text-muted: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] {
+  /* --- DARK MODE --- */
   /* Background layers */
   --bg-primary: #0f0f14;
   --bg-surface: #1a1a24;
@@ -23,31 +92,10 @@
   --accent-light: #a78bfa;
   --accent-glow: rgba(124, 58, 237, 0.25);
 
-  /* Semantic colors */
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.1);
-
   /* Text */
   --text: #f1f5f9;
   --text-muted: #94a3b8;
   --text-faint: #475569;
-
-  /* Spacing scale */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
-
-  /* Border radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
-  --radius-full: 9999px;
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -55,14 +103,16 @@
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
   --shadow-accent: 0 4px 24px rgba(124, 58, 237, 0.3);
 
-  /* Transitions */
-  --transition: all 0.2s ease;
-  --transition-slow: all 0.35s ease;
+  /* Glass effect overrides */
+  --glass-bg: rgba(26, 26, 36, 0.7);
+  --glass-border: var(--border);
 
-  /* Layout */
-  --sidebar-width: 260px;
-  --max-content-width: 680px;
+  /* Auth branding */
+  --auth-gradient: linear-gradient(145deg, #13131e 0%, #1a0a35 50%, #0f0f14 100%);
+  --auth-text: #ffffff;
+  --auth-text-muted: rgba(255, 255, 255, 0.8);
 }
+
 
 /* ---- Reset & Base ---- */
 *,
@@ -120,10 +170,10 @@ img {
 
 /* ---- Utility Classes ---- */
 .glass {
-  background: rgba(26, 26, 36, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
 }
 
 .gradient-text {

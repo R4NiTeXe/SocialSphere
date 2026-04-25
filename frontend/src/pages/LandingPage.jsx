@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import ThemeToggle from "../components/ThemeToggle";
 import "../styles/index.css";
 import "../App.css";
 
@@ -29,6 +30,7 @@ export default function LandingPage() {
           <span className="logo-text gradient-text">SocialSphere</span>
         </Link>
         <div className="header-actions">
+          <ThemeToggle />
           <Link to="/login">
             <button className="btn-ghost">Log in</button>
           </Link>
