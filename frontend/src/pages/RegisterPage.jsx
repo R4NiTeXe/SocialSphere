@@ -57,10 +57,10 @@ export default function RegisterPage() {
     <div className="auth-page">
       {/* Left branding panel */}
       <aside className="auth-brand">
-        <div className="brand-logo">
+        <Link to="/" className="brand-logo">
           <span className="brand-logo-icon">◈</span>
           <span className="brand-logo-text">SocialSphere</span>
-        </div>
+        </Link>
         <h1 className="brand-headline">
           Join millions of
           <br />
@@ -85,7 +85,7 @@ export default function RegisterPage() {
       <section className="auth-form-panel">
         <div className="auth-form-box">
           <div className="auth-form-header">
-            <h2 className="auth-form-title">Create your account</h2>
+            <h2 className="auth-form-title">Join SocialSphere</h2>
             <p className="auth-form-subtitle">It's free and takes less than a minute</p>
           </div>
 
@@ -155,7 +155,7 @@ export default function RegisterPage() {
             </div>
 
             <button type="submit" className="btn-submit" disabled={loading}>
-              {loading ? <span className="spinner" /> : "Create account"}
+              {loading ? <span className="spinner" /> : "Join now"}
             </button>
           </form>
 

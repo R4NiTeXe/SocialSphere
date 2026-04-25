@@ -46,10 +46,10 @@ export default function LoginPage() {
     <div className="auth-page">
       {/* Left branding panel */}
       <aside className="auth-brand">
-        <div className="brand-logo">
+        <Link to="/" className="brand-logo">
           <span className="brand-logo-icon">◈</span>
           <span className="brand-logo-text">SocialSphere</span>
-        </div>
+        </Link>
         <h1 className="brand-headline">
           Good to see
           <br />
@@ -72,8 +72,8 @@ export default function LoginPage() {
       <section className="auth-form-panel">
         <div className="auth-form-box">
           <div className="auth-form-header">
-            <h2 className="auth-form-title">Log in</h2>
-            <p className="auth-form-subtitle">Welcome back — enter your details below</p>
+            <h2 className="auth-form-title">Welcome back</h2>
+            <p className="auth-form-subtitle">We've missed you! Enter your details below</p>
           </div>
 
           {error && (

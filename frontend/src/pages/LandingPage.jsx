@@ -24,10 +24,10 @@ export default function LandingPage() {
     <div className="app-container">
       {/* Top navigation bar */}
       <header className="app-header glass">
-        <div className="logo">
+        <Link to="/" className="logo">
           <span className="logo-icon">◈</span>
           <span className="logo-text gradient-text">SocialSphere</span>
-        </div>
+        </Link>
         <div className="header-actions">
           <Link to="/login">
             <button className="btn-ghost">Log in</button>
@@ -66,19 +66,19 @@ export default function LandingPage() {
           {checking && (
             <>
               <span className="status-dot dot-loading" />
-              <span>Setting things up…</span>
+              <span>Connecting to the world…</span>
             </>
           )}
           {!checking && serverReady && (
             <>
               <span className="status-dot dot-online" />
-              <span>Everything is up and running</span>
+              <span>We're connected and ready!</span>
             </>
           )}
           {!checking && !serverReady && (
             <>
               <span className="status-dot dot-offline" />
-              <span>Having trouble connecting — please try again shortly</span>
+              <span>Oops! We're having trouble connecting. Try again soon!</span>
             </>
           )}
         </div>
