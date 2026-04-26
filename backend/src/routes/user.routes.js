@@ -4,7 +4,6 @@ import { getUserProfile, toggleFollow, searchUsers, getUserStats, getUserActivit
 
 const router = Router();
 
-// Secure routes — need login
 router.use(verifyJWT);
 
 router.route("/search").get(searchUsers);

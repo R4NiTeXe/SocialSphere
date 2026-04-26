@@ -6,9 +6,9 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // true on first load while we check the session
+  const [loading, setLoading] = useState(true);
 
-  // On app start, check if the user is already logged in
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -61,7 +61,7 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Custom hook so components don't need to import useContext + AuthContext separately
+
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");

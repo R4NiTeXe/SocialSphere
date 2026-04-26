@@ -1,13 +1,7 @@
-/* ======================================================
-   GLOBAL DESIGN SYSTEM — CSS Custom Properties
-   All colors, spacing, radius, shadow, and typography
-   tokens live here. Change them once, update everywhere.
-   ====================================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* --- LIGHT MODE (Refined Premium) --- */
+  /* Light Theme */
   /* Background layers */
   --bg-primary: #f8fafc;
   --bg-surface: #ffffff;
@@ -75,7 +69,7 @@
 }
 
 [data-theme="dark"] {
-  /* --- DARK MODE --- */
+  /* Dark Theme */
   /* Background layers */
   --bg-primary: #0f0f14;
   --bg-surface: #1a1a24;
@@ -114,7 +108,7 @@
 }
 
 
-/* ---- Reset & Base ---- */
+/* Reset and Base */
 *,
 *::before,
 *::after {
@@ -153,7 +147,7 @@ img {
   display: block;
 }
 
-/* ---- Scrollbar Styling ---- */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -168,7 +162,7 @@ img {
   background: var(--accent);
 }
 
-/* ---- Utility Classes ---- */
+/* Utilities */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);

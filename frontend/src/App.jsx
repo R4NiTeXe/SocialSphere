@@ -9,14 +9,13 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import MessagesPage from "./pages/MessagesPage.jsx";
 import InsightsPage from "./pages/InsightsPage.jsx";
 
-// Redirects logged-in users away from auth pages
+
 function PublicRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;
   return isAuthenticated ? <Navigate to="/home" replace /> : children;
 }
 
-// Redirects logged-out users away from protected pages
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;

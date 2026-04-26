@@ -9,7 +9,6 @@ import { initSocket } from "./socket.js";
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
-// Initialize Socket.IO with the HTTP server
 initSocket(server);
 
 connectDB().then(() => {

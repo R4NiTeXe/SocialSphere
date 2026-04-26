@@ -1,7 +1,6 @@
 import axiosInstance from "./axiosInstance";
 
 export const createPost = async (postData) => {
-  // Using FormData because we might have an image file
   const response = await axiosInstance.post("/posts", postData, {
     headers: {
       "Content-Type": "multipart/form-data",

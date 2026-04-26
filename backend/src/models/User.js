@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    // stored here so we can invalidate sessions on logout
+
     refreshToken: {
       type: String,
     },
@@ -68,18 +68,18 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash the password before saving — only runs if the password field changed
+
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-// Check if a given password matches the stored hash
+
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Short-lived access token — sent back to the client
+
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     { _id: this._id, email: this.email, username: this.username },
@@ -88,7 +88,7 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-// Long-lived refresh token — stored in the DB and in an httpOnly cookie
+
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY,

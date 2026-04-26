@@ -91,7 +91,7 @@ const toggleFollow = asyncHandler(async (req, res) => {
   const isFollowing = req.user.following.includes(userId);
 
   if (isFollowing) {
-    // Unfollow
+
     await User.findByIdAndUpdate(req.user._id, {
       $pull: { following: userId },
     });
@@ -99,7 +99,7 @@ const toggleFollow = asyncHandler(async (req, res) => {
       $pull: { followers: req.user._id },
     });
   } else {
-    // Follow
+
     await User.findByIdAndUpdate(req.user._id, {
       $addToSet: { following: userId },
     });
@@ -107,7 +107,7 @@ const toggleFollow = asyncHandler(async (req, res) => {
       $addToSet: { followers: req.user._id },
     });
 
-    // Create notification using utility
+
     await createNotification({
       recipient: userId,
       sender: req.user._id,
@@ -150,7 +150,7 @@ const getUserStats = asyncHandler(async (req, res) => {
 
   const totalPosts = await Post.countDocuments({ owner: userId });
   
-  // Calculate total likes received on all posts
+
   const posts = await Post.find({ owner: userId });
   const totalLikes = posts.reduce((acc, post) => acc + (post.likes?.length || 0), 0);
   
@@ -188,7 +188,7 @@ const getUserActivity = asyncHandler(async (req, res) => {
     { $sort: { "_id": 1 } }
   ]);
 
-  // Fill in missing days with 0
+
   const last7Days = [];
   for (let i = 6; i >= 0; i--) {
     const date = new Date();

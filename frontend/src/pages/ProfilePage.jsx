@@ -243,7 +243,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* User Posts Section would go here */}
+
       </main>
     </div>
   );

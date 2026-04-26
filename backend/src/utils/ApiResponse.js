@@ -1,4 +1,3 @@
-// Wraps all successful API responses in a consistent shape
 class ApiResponse {
   constructor(statusCode, data, message = "Success") {
     this.statusCode = statusCode;

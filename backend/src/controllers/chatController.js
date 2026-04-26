@@ -13,7 +13,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 
   if (!content) throw new ApiError(400, "Content is required");
 
-  // Check if conversation already exists
+
   let conversation = await Conversation.findOne({
     participants: { $all: [senderId, receiverId] },
   });
@@ -35,7 +35,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     await conversation.save();
   }
 
-  // Real-time: Emit message to receiver
+
   emitToUser(receiverId, "newMessage", newMessage);
 
   return res.status(201).json(new ApiResponse(201, newMessage, "Message sent"));
@@ -73,7 +73,7 @@ const getConversations = asyncHandler(async (req, res) => {
     .populate("lastMessage")
     .sort({ updatedAt: -1 });
 
-  // Filter out the logged-in user from participants list for each conversation
+
   const filteredConversations = conversations.map((conv) => {
     const otherParticipant = conv.participants.find(
       (p) => p._id.toString() !== loggedInUserId.toString()

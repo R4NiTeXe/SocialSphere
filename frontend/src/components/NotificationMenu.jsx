@@ -19,7 +19,7 @@ export default function NotificationMenu() {
         setUnreadCount((prev) => prev + 1);
         setNotifications((prev) => [notification, ...prev]);
         
-        // Show a small audio cue or browser notification if needed
+
         console.log("Real-time notification received:", notification);
       });
     }

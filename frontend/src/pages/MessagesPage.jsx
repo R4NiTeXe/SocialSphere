@@ -22,11 +22,11 @@ export default function MessagesPage() {
     const socket = getSocket();
     if (socket) {
       socket.on("newMessage", (msg) => {
-        // If the message is from the currently selected chat, add it to messages list
+
         if (selectedChat && (msg.sender === selectedChat.otherParticipant._id || msg.receiver === selectedChat.otherParticipant._id)) {
           setMessages((prev) => [...prev, msg]);
         }
-        // Always refresh conversations to update "last message" and order
+
         fetchConversations();
       });
     }
@@ -40,14 +40,14 @@ export default function MessagesPage() {
     if (selectedChat) {
       fetchMessages(selectedChat.otherParticipant._id);
     } else if (location.state?.recipient) {
-      // If we came from a profile "Message" button
+
       const recipient = location.state.recipient;
-      // Check if conversation already exists in sidebar
+
       const existingConv = conversations.find(c => c.otherParticipant._id === recipient._id);
       if (existingConv) {
         setSelectedChat(existingConv);
       } else {
-        // Create a temporary "pseudo-conversation" for the UI
+
         setSelectedChat({
           _id: "new",
           otherParticipant: recipient,
@@ -94,7 +94,7 @@ export default function MessagesPage() {
       setMessages((prev) => [...prev, res.data]);
       setNewMessage("");
       
-      // If it was a new conversation, refresh everything to get proper IDs
+
       if (selectedChat.isNew) {
         const refreshedConvs = await getConversations();
         setConversations(refreshedConvs.data);
@@ -113,7 +113,7 @@ export default function MessagesPage() {
       <Header />
       <main className="messages-main">
         <div className="messages-layout glass">
-          {/* Sidebar */}
+
           <aside className="chat-sidebar">
             <div className="sidebar-header">
               <h2>Messages</h2>
@@ -149,7 +149,7 @@ export default function MessagesPage() {
             </div>
           </aside>
 
-          {/* Chat Window */}
+
           <section className="chat-window">
             {selectedChat ? (
               <>

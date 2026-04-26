@@ -6,6 +6,6 @@ export const connectDB = async () => {
     console.log(`\n✅ MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
     console.error("❌ MongoDB connection failed:", error.message);
-    process.exit(1); // crash intentionally — running without a DB makes no sense
+    process.exit(1);
   }
 };

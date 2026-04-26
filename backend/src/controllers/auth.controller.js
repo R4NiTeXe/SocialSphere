@@ -101,7 +101,7 @@ const updateProfile = asyncHandler(async (req, res) => {
 
   const files = req.files || {};
   
-  // Handle Avatar
+
   if (files.avatar && files.avatar[0]) {
     if (req.user.avatar && req.user.avatar.includes("localhost:5000/temp/")) {
       const oldFilename = req.user.avatar.split("/").pop();
@@ -111,7 +111,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     updateData.avatar = `http://localhost:5000/temp/${files.avatar[0].filename}`;
   }
 
-  // Handle Cover Image
+
   if (files.coverImage && files.coverImage[0]) {
     if (req.user.coverImage && req.user.coverImage.includes("localhost:5000/temp/")) {
       const oldFilename = req.user.coverImage.split("/").pop();

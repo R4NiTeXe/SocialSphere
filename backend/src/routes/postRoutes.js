@@ -5,7 +5,6 @@ import { createPost, getFeed, deletePost, toggleLike, addComment, toggleCommentL
 
 const router = Router();
 
-// All post routes require authentication
 router.use(verifyJWT);
 
 router.route("/")

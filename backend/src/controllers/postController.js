@@ -67,7 +67,7 @@ const toggleLike = asyncHandler(async (req, res) => {
     post.likes = post.likes.filter((id) => id.toString() !== req.user._id.toString());
   } else {
     post.likes.push(req.user._id);
-    // Create notification using utility
+
     await createNotification({
       recipient: post.owner,
       sender: req.user._id,
@@ -91,7 +91,7 @@ const addComment = asyncHandler(async (req, res) => {
   post.comments.push({ content, owner: req.user._id });
   await post.save();
 
-  // Create notification using utility
+
   await createNotification({
     recipient: post.owner,
     sender: req.user._id,
@@ -115,7 +115,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     comment.likes = comment.likes.filter((id) => id.toString() !== req.user._id.toString());
   } else {
     comment.likes.push(req.user._id);
-    // Create notification using utility
+
     await createNotification({
       recipient: comment.owner,
       sender: req.user._id,
@@ -139,7 +139,7 @@ const addCommentReply = asyncHandler(async (req, res) => {
   comment.replies.push({ content, owner: req.user._id });
   await post.save();
 
-  // Create notification using utility
+
   await createNotification({
     recipient: comment.owner,
     sender: req.user._id,
