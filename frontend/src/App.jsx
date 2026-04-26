@@ -6,6 +6,8 @@ import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import MessagesPage from "./pages/MessagesPage.jsx";
+import InsightsPage from "./pages/InsightsPage.jsx";
 
 // Redirects logged-in users away from auth pages
 function PublicRoute({ children }) {
@@ -49,6 +51,24 @@ export default function App() {
         element={
           <PrivateRoute>
             <HomePage />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/messages"
+        element={
+          <PrivateRoute>
+            <MessagesPage />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/insights"
+        element={
+          <PrivateRoute>
+            <InsightsPage />
           </PrivateRoute>
         }
       />

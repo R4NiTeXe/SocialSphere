@@ -24,3 +24,13 @@ export const searchUsers = async (query) => {
   const response = await axiosInstance.get(`/users/search?query=${query}`);
   return response.data;
 };
+
+export const getUserStats = async () => {
+  const response = await axiosInstance.get("/users/stats");
+  return response.data;
+};
+
+export const getUserActivity = async () => {
+  const response = await axiosInstance.get("/users/activity");
+  return response.data;
+};

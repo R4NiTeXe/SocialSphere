@@ -279,6 +279,31 @@
   content: "";
 }
 
+.profile-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--bg-hover);
+  color: var(--text);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.btn-message:hover {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .loading-screen {
   height: 100vh;
   display: flex;
