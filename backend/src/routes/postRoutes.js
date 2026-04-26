@@ -10,7 +10,7 @@ router.use(verifyJWT);
 
 router.route("/")
   .get(getFeed)
-  .post(upload.single("image"), createPost);
+  .post(upload.array("images", 4), createPost);
 
 router.route("/:postId")
   .delete(deletePost);

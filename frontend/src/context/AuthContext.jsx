@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { loginUser, registerUser, logoutUser, fetchMe } from "../api/auth.api.js";
+import { initSocket, disconnectSocket } from "../api/socket.api.js";
 
 const AuthContext = createContext(null);
 
@@ -15,9 +16,15 @@ export function AuthProvider({ children }) {
       return;
     }
     fetchMe()
-      .then((res) => setUser(res.data.data))
+      .then((res) => {
+        const userData = res.data.data;
+        setUser(userData);
+        initSocket(userData._id);
+      })
       .catch(() => localStorage.removeItem("accessToken"))
       .finally(() => setLoading(false));
+      
+    return () => disconnectSocket();
   }, []);
 
   const login = async (credentials) => {
@@ -25,6 +32,7 @@ export function AuthProvider({ children }) {
     const { user, accessToken } = res.data.data;
     localStorage.setItem("accessToken", accessToken);
     setUser(user);
+    initSocket(user._id);
     return user;
   };
 
@@ -33,6 +41,7 @@ export function AuthProvider({ children }) {
     const { user, accessToken } = res.data.data;
     localStorage.setItem("accessToken", accessToken);
     setUser(user);
+    initSocket(user._id);
     return user;
   };
 
@@ -40,6 +49,7 @@ export function AuthProvider({ children }) {
     await logoutUser();
     localStorage.removeItem("accessToken");
     setUser(null);
+    disconnectSocket();
   };
 
   return (

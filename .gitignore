@@ -25,3 +25,7 @@ npm-debug.log*
 # Misc
 .cache/
 coverage/
+
+# Uploads
+backend/public/temp/*
+!backend/public/temp/.gitkeep

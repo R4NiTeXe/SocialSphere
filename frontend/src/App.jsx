@@ -54,7 +54,7 @@ export default function App() {
       />
 
       <Route
-        path="/profile"
+        path="/profile/:username?"
         element={
           <PrivateRoute>
             <ProfilePage />

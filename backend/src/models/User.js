@@ -90,11 +90,9 @@ userSchema.methods.generateAccessToken = function () {
 
 // Long-lived refresh token — stored in the DB and in an httpOnly cookie
 userSchema.methods.generateRefreshToken = function () {
-  return jwt.sign(
-    { _id: this._id },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
-  );
+  return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+  });
 };
 
 export const User = mongoose.model("User", userSchema);

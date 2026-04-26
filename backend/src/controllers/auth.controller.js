@@ -99,16 +99,26 @@ const updateProfile = asyncHandler(async (req, res) => {
 
   let updateData = { fullName, bio: bio || "" };
 
-  if (req.file) {
-    // Delete old avatar if it exists locally
+  const files = req.files || {};
+  
+  // Handle Avatar
+  if (files.avatar && files.avatar[0]) {
     if (req.user.avatar && req.user.avatar.includes("localhost:5000/temp/")) {
       const oldFilename = req.user.avatar.split("/").pop();
       const oldPath = path.join("public", "temp", oldFilename);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
-    updateData.avatar = `http://localhost:5000/temp/${req.file.filename}`;
+    updateData.avatar = `http://localhost:5000/temp/${files.avatar[0].filename}`;
+  }
+
+  // Handle Cover Image
+  if (files.coverImage && files.coverImage[0]) {
+    if (req.user.coverImage && req.user.coverImage.includes("localhost:5000/temp/")) {
+      const oldFilename = req.user.coverImage.split("/").pop();
+      const oldPath = path.join("public", "temp", oldFilename);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+    updateData.coverImage = `http://localhost:5000/temp/${files.coverImage[0].filename}`;
   }
 
   const user = await User.findByIdAndUpdate(

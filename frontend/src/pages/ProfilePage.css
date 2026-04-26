@@ -17,7 +17,35 @@
 
 .profile-cover {
   height: 200px;
-  background: var(--auth-gradient);
+  background-color: var(--bg-hover);
+  position: relative;
+}
+
+.cover-upload-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cover-upload-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+.profile-content {
   position: relative;
 }
 
@@ -216,6 +244,50 @@
 
 .avatar-upload-overlay svg {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.btn-follow {
+  padding: 10px 24px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid var(--accent);
+}
+
+.btn-follow:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-accent);
+}
+
+.btn-follow.following {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-follow.following:hover {
+  background: rgba(239, 68, 68, 0.05);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.btn-follow.following:hover::after {
+  content: "";
+}
+
+.loading-screen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .success-message {

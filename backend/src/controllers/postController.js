@@ -1,9 +1,9 @@
 import path from "path";
 import fs from "fs";
 import { Post } from "../models/Post.js";
-import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { createNotification } from "../utils/notification.utils.js";
 
 const createPost = asyncHandler(async (req, res) => {
   const { content } = req.body;
@@ -11,14 +11,14 @@ const createPost = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Content is required");
   }
 
-  let imagePath = "";
-  if (req.file) {
-    imagePath = `/temp/${req.file.filename}`;
+  let imagePaths = [];
+  if (req.files && req.files.length > 0) {
+    imagePaths = req.files.map((file) => `/temp/${file.filename}`);
   }
 
   const post = await Post.create({
     content,
-    image: imagePath,
+    images: imagePaths,
     owner: req.user._id,
   });
 
@@ -46,9 +46,11 @@ const deletePost = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized");
   }
 
-  if (post.image) {
-    const fullPath = path.join(process.cwd(), "public", post.image);
-    if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+  if (post.images && post.images.length > 0) {
+    post.images.forEach((image) => {
+      const fullPath = path.join(process.cwd(), "public", image);
+      if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+    });
   }
 
   await Post.findByIdAndDelete(postId);
@@ -65,6 +67,13 @@ const toggleLike = asyncHandler(async (req, res) => {
     post.likes = post.likes.filter((id) => id.toString() !== req.user._id.toString());
   } else {
     post.likes.push(req.user._id);
+    // Create notification using utility
+    await createNotification({
+      recipient: post.owner,
+      sender: req.user._id,
+      type: "like",
+      post: post._id,
+    });
   }
 
   await post.save();
@@ -82,6 +91,14 @@ const addComment = asyncHandler(async (req, res) => {
   post.comments.push({ content, owner: req.user._id });
   await post.save();
 
+  // Create notification using utility
+  await createNotification({
+    recipient: post.owner,
+    sender: req.user._id,
+    type: "comment",
+    post: post._id,
+  });
+
   const updated = await Post.findById(postId).populate("comments.owner", "username fullName avatar");
   return res.status(201).json(new ApiResponse(201, updated.comments[updated.comments.length - 1], "Comment added"));
 });
@@ -98,6 +115,14 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     comment.likes = comment.likes.filter((id) => id.toString() !== req.user._id.toString());
   } else {
     comment.likes.push(req.user._id);
+    // Create notification using utility
+    await createNotification({
+      recipient: comment.owner,
+      sender: req.user._id,
+      type: "like",
+      post: post._id,
+      comment: comment._id,
+    });
   }
 
   await post.save();
@@ -113,6 +138,15 @@ const addCommentReply = asyncHandler(async (req, res) => {
   const comment = post.comments.id(commentId);
   comment.replies.push({ content, owner: req.user._id });
   await post.save();
+
+  // Create notification using utility
+  await createNotification({
+    recipient: comment.owner,
+    sender: req.user._id,
+    type: "reply",
+    post: post._id,
+    comment: comment._id,
+  });
 
   const updated = await Post.findById(postId).populate("comments.replies.owner", "username fullName avatar");
   const commentRefreshed = updated.comments.id(commentId);

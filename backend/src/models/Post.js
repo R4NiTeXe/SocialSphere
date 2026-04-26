@@ -7,9 +7,11 @@ const postSchema = new Schema(
       required: [true, "Post content cannot be empty"],
       trim: true,
     },
-    image: {
-      type: String, // URL of the image (local path for now)
-    },
+    images: [
+      {
+        type: String,
+      },
+    ],
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",

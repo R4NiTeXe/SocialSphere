@@ -10,6 +10,6 @@ router.post("/login", login);
 
 router.post("/logout", verifyJWT, logout);
 router.get("/me", verifyJWT, getMe);
-router.patch("/update-profile", verifyJWT, upload.single("avatar"), updateProfile);
+router.patch("/update-profile", verifyJWT, upload.fields([{ name: "avatar", maxCount: 1 }, { name: "coverImage", maxCount: 1 }]), updateProfile);
 
 export default router;

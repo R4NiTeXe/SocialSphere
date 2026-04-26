@@ -1,32 +1,54 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { updateProfile } from "../api/user.api";
-import UserMenu from "../components/UserMenu";
-import ThemeToggle from "../components/ThemeToggle";
+import { updateProfile, getUserProfile, toggleFollow } from "../api/user.api";
+import Header from "../components/Header";
+import PostCard from "../components/PostCard";
 import "./ProfilePage.css";
 
 export default function ProfilePage() {
-  const { user, setUser } = useAuth();
-  const [formData, setFormData] = useState({
-    fullName: user?.fullName || "",
-    bio: user?.bio || "",
-  });
+  const { username } = useParams();
+  const { user: currentUser, setUser: setCurrentUser } = useAuth();
+  
+  const [profileUser, setProfileUser] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  
+  const [formData, setFormData] = useState({ fullName: "", bio: "" });
   const [avatar, setAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || "");
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPreview, setCoverPreview] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (user) {
+    fetchProfile();
+  }, [username, currentUser]);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const targetUsername = username || currentUser?.username;
+      if (!targetUsername) return;
+
+      const response = await getUserProfile(targetUsername);
+      setProfileUser(response.data);
+      setIsOwnProfile(response.data.username === currentUser?.username);
+      
       setFormData({
-        fullName: user.fullName,
-        bio: user.bio || "",
+        fullName: response.data.fullName,
+        bio: response.data.bio || "",
       });
-      setAvatarPreview(user.avatar || "");
+      setAvatarPreview(response.data.avatar || "");
+      setCoverPreview(response.data.coverImage || "");
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [user]);
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,6 +62,29 @@ export default function ProfilePage() {
     }
   };
 
+  const handleCoverChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverImage(file);
+      setCoverPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleFollow = async () => {
+    try {
+      const response = await toggleFollow(profileUser._id);
+      setProfileUser({
+        ...profileUser,
+        isFollowing: response.data.isFollowing,
+        followersCount: response.data.isFollowing 
+          ? profileUser.followersCount + 1 
+          : profileUser.followersCount - 1
+      });
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -48,9 +93,11 @@ export default function ProfilePage() {
       data.append("fullName", formData.fullName);
       data.append("bio", formData.bio);
       if (avatar) data.append("avatar", avatar);
+      if (coverImage) data.append("coverImage", coverImage);
 
       const response = await updateProfile(data);
-      setUser(response.data);
+      setCurrentUser(response.data);
+      setProfileUser(response.data);
       setIsEditing(false);
       setMessage("Profile updated successfully");
       setTimeout(() => setMessage(""), 3000);
@@ -61,37 +108,44 @@ export default function ProfilePage() {
     }
   };
 
+  if (loading && !profileUser) {
+    return <div className="loading-screen">Loading...</div>;
+  }
+
   return (
     <div className="app-container" style={{ background: "var(--bg-primary)" }}>
-      <header className="app-header glass">
-        <Link to="/home" className="logo">
-          <span className="logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 17 12 22 22 17"></polyline>
-              <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
-          </span>
-          <span className="logo-text gradient-text">SocialSphere</span>
-        </Link>
-        <div className="header-actions">
-          <ThemeToggle />
-          <UserMenu />
-        </div>
-      </header>
+      <Header />
 
       <main className="profile-main">
         <div className="profile-card glass">
-          <div className="profile-cover"></div>
+          <div 
+            className="profile-cover"
+            style={{ 
+              backgroundImage: coverPreview ? `url(${coverPreview})` : 'linear-gradient(135deg, var(--accent), var(--accent-dark))',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            {isOwnProfile && isEditing && (
+              <label className="cover-upload-btn">
+                <input type="file" accept="image/*" onChange={handleCoverChange} hidden />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                Change Cover
+              </label>
+            )}
+          </div>
           <div className="profile-content">
             <div className="profile-avatar-container">
               <div className="profile-avatar-large">
                 {avatarPreview ? (
-                  <img src={avatarPreview.startsWith('blob:') ? avatarPreview : `${avatarPreview}?t=${new Date().getTime()}`} alt={user?.username} />
+                  <img src={avatarPreview.startsWith('blob:') ? avatarPreview : `${avatarPreview}?t=${new Date().getTime()}`} alt={profileUser?.username} />
                 ) : (
-                  <span>{user?.username?.charAt(0).toUpperCase()}</span>
+                  <span>{profileUser?.username?.charAt(0).toUpperCase()}</span>
                 )}
-                {isEditing && (
+                {isOwnProfile && isEditing && (
                   <label className="avatar-upload-overlay">
                     <input type="file" accept="image/*" onChange={handleAvatarChange} hidden />
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -106,20 +160,41 @@ export default function ProfilePage() {
             {!isEditing ? (
               <div className="profile-details">
                 <div className="profile-header-row">
-                  <h1 className="profile-name">{user?.fullName}</h1>
-                  <button className="btn-edit" onClick={() => setIsEditing(true)}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4L18.5 2.5z"></path>
-                    </svg>
-                    Edit Profile
-                  </button>
+                  <div>
+                    <h1 className="profile-name">{profileUser?.fullName}</h1>
+                    <p className="profile-username">@{profileUser?.username}</p>
+                  </div>
+                  
+                  {isOwnProfile ? (
+                    <button className="btn-edit" onClick={() => setIsEditing(true)}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4L18.5 2.5z"></path>
+                      </svg>
+                      Edit Profile
+                    </button>
+                  ) : (
+                    <button 
+                      className={`btn-follow ${profileUser?.isFollowing ? 'following' : ''}`} 
+                      onClick={handleFollow}
+                    >
+                      {profileUser?.isFollowing ? 'Following' : 'Follow'}
+                    </button>
+                  )}
                 </div>
-                <p className="profile-username">@{user?.username}</p>
-                <p className="profile-bio">{user?.bio || "No bio yet"}</p>
+                
+                <div className="profile-stats">
+                  <div className="stat">
+                    <strong>{profileUser?.followingCount || 0}</strong> Following
+                  </div>
+                  <div className="stat">
+                    <strong>{profileUser?.followersCount || 0}</strong> Followers
+                  </div>
+                </div>
+
+                <p className="profile-bio">{profileUser?.bio || "No bio yet"}</p>
                 
                 {message && <p className="success-message">{message}</p>}
-                
               </div>
             ) : (
               <form className="profile-edit-form" onSubmit={handleSubmit}>
@@ -154,6 +229,8 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
+
+        {/* User Posts Section would go here */}
       </main>
     </div>
   );

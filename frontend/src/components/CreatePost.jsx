@@ -1,110 +1,109 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { createPost } from "../api/posts.api";
+import { useAuth } from "../context/AuthContext.jsx";
 import "./CreatePost.css";
 
 export default function CreatePost({ onPostCreated }) {
+  const { user } = useAuth();
   const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
-  const fileInputRef = useRef(null);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + images.length > 4) {
+      alert("You can only upload up to 4 images total");
+      return;
     }
+
+    const newImages = [...images, ...files];
+    setImages(newImages);
+    
+    const newPreviews = newImages.map((file) => URL.createObjectURL(file));
+    setPreviews(newPreviews);
   };
 
-  const handleRemoveImage = () => {
-    setImage(null);
-    setPreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const removeImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    setImages(newImages);
+    setPreviews(newImages.map(file => URL.createObjectURL(file)));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim() && !image) return;
+    if (!content.trim() && images.length === 0) return;
 
     setLoading(true);
     try {
       const formData = new FormData();
       formData.append("content", content);
-      if (image) formData.append("image", image);
+      images.forEach((img) => formData.append("images", img));
 
       await createPost(formData);
-      
       setContent("");
-      handleRemoveImage();
-      
+      setImages([]);
+      setPreviews([]);
       if (onPostCreated) onPostCreated();
     } catch (error) {
-      console.error(error);
+      console.error("Failed to create post:", error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="create-post-card glass">
-      <div className="create-post-header">
-        <div className="avatar-placeholder">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
-        <textarea
-          placeholder="What's on your mind?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={content.split("\n").length || 1}
-        />
-      </div>
-
-      {preview && (
-        <div className="image-preview-container">
-          <img src={preview} alt="Preview" className="image-preview" />
-          <button className="remove-image-btn" onClick={handleRemoveImage}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-      )}
-
-      <div className="create-post-footer">
-        <div className="post-actions">
-          <button 
-            className="action-btn" 
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <svg className="action-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <circle cx="8.5" cy="8.5" r="1.5"></circle>
-              <polyline points="21 15 16 10 5 21"></polyline>
-            </svg>
-            <span className="action-text">Photo</span>
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-            accept="image/*"
-            style={{ display: "none" }}
+    <div className="create-post glass">
+      <form onSubmit={handleSubmit}>
+        <div className="create-post-top">
+          <div className="user-avatar-small">
+            {user?.avatar ? (
+              <img src={user.avatar} alt={user.username} />
+            ) : (
+              <span>{user?.username?.charAt(0).toUpperCase()}</span>
+            )}
+          </div>
+          <textarea
+            placeholder="What's on your mind?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows="3"
           />
         </div>
 
-        <button 
-          className="btn-primary" 
-          disabled={loading || (!content.trim() && !image)}
-          onClick={handleSubmit}
-        >
-          {loading ? "Sharing..." : "Post Story"}
-        </button>
-      </div>
+        {previews.length > 0 && (
+          <div className="image-previews-grid">
+            {previews.map((preview, index) => (
+              <div key={index} className="preview-item">
+                <img src={preview} alt="preview" />
+                <button type="button" className="remove-preview" onClick={() => removeImage(index)}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="create-post-bottom">
+          <div className="post-actions">
+            <label className="action-btn">
+              <input type="file" accept="image/*" multiple onChange={handleFileChange} hidden />
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              Photo
+            </label>
+          </div>
+          <button type="submit" className="btn-post" disabled={loading || (!content.trim() && images.length === 0)}>
+            {loading ? "Posting..." : "Post"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

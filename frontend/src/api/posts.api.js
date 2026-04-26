@@ -15,6 +15,8 @@ export const getFeed = async () => {
   return response.data;
 };
 
+export const fetchPosts = getFeed;
+
 export const deletePost = async (postId) => {
   const response = await axiosInstance.delete(`/posts/${postId}`);
   return response.data;
