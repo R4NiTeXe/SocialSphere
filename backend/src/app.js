@@ -20,6 +20,8 @@ import userRoutes from "./routes/user.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 
+app.get("/api/health", (req, res) => res.status(200).json({ status: "OK" }));
+
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/posts", postRoutes);
 app.use("/api/v1/users", userRoutes);
