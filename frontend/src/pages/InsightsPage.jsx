@@ -34,7 +34,7 @@ export default function InsightsPage() {
     { 
       label: "Total Followers", 
       value: stats?.totalFollowers, 
-      color: "#6366f1", 
+      color: "#4f46e5", 
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -47,7 +47,7 @@ export default function InsightsPage() {
     { 
       label: "Likes Received", 
       value: stats?.totalLikes, 
-      color: "#f43f5e", 
+      color: "#dc2626", 
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -57,7 +57,7 @@ export default function InsightsPage() {
     { 
       label: "Posts Created", 
       value: stats?.totalPosts, 
-      color: "#10b981", 
+      color: "#059669", 
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -71,7 +71,7 @@ export default function InsightsPage() {
     { 
       label: "Engagement Rate", 
       value: `${stats?.engagementRate}%`, 
-      color: "#f59e0b", 
+      color: "#d97706", 
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
@@ -93,7 +93,7 @@ export default function InsightsPage() {
         <div className="stats-grid">
           {statCards.map((card, i) => (
             <div key={i} className="stat-card glass">
-              <div className="stat-icon" style={{ background: `${card.color}20`, color: card.color }}>
+              <div className="stat-icon" style={{ background: `${card.color}15`, color: card.color }}>
                 {card.icon}
               </div>
               <div className="stat-info">
@@ -112,39 +112,43 @@ export default function InsightsPage() {
                 <AreaChart data={activity}>
                   <defs>
                     <linearGradient id="colorPosts" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" vertical={false} opacity={0.3} />
                   <XAxis 
                     dataKey="date" 
-                    stroke="var(--text-faint)" 
+                    stroke="var(--text-muted)" 
                     fontSize={12} 
                     tickLine={false} 
                     axisLine={false} 
+                    dy={10}
                   />
                   <YAxis 
-                    stroke="var(--text-faint)" 
+                    stroke="var(--text-muted)" 
                     fontSize={12} 
                     tickLine={false} 
                     axisLine={false} 
+                    dx={-10}
                   />
                   <Tooltip 
                     contentStyle={{ 
                       background: 'var(--bg-elevated)', 
                       border: '1px solid var(--border)',
                       borderRadius: '12px',
-                      color: 'var(--text)'
+                      color: 'var(--text)',
+                      boxShadow: 'var(--shadow-md)'
                     }} 
                   />
                   <Area 
                     type="monotone" 
                     dataKey="posts" 
-                    stroke="#6366f1" 
-                    strokeWidth={3}
+                    stroke="var(--accent)" 
+                    strokeWidth={4}
                     fillOpacity={1} 
                     fill="url(#colorPosts)" 
+                    animationDuration={1500}
                   />
                 </AreaChart>
               </ResponsiveContainer>
