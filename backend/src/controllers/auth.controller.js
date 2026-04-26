@@ -116,7 +116,30 @@ const logout = asyncHandler(async (req, res) => {
 const getMe = asyncHandler(async (req, res) => {
   return res
     .status(200)
-    .json(new ApiResponse(200, req.user, "Here's your profile info"));
+    .json(new ApiResponse(200, req.user, "User profile fetched successfully"));
 });
 
-export { register, login, logout, getMe };
+const updateProfile = asyncHandler(async (req, res) => {
+  const { fullName, bio } = req.body;
+
+  if (!fullName) {
+    throw new ApiError(400, "Full name is required");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        fullName,
+        bio: bio || "",
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Profile updated successfully"));
+});
+
+export { register, login, logout, getMe, updateProfile };

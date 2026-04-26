@@ -3,11 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { getFeed } from "../api/posts.api";
 import ThemeToggle from "../components/ThemeToggle";
+import UserMenu from "../components/UserMenu";
 import CreatePost from "../components/CreatePost";
 import PostCard from "../components/PostCard";
 
 export default function HomePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,11 +28,6 @@ export default function HomePage() {
     fetchPosts();
   }, [fetchPosts]);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
-  };
-
   return (
     <div className="app-container" style={{ background: "var(--bg-primary)" }}>
       <header className="app-header glass">
@@ -41,9 +37,7 @@ export default function HomePage() {
         </Link>
         <div className="header-actions">
           <ThemeToggle />
-          <button onClick={handleLogout} className="btn-ghost">
-            Log out
-          </button>
+          <UserMenu />
         </div>
       </header>
 

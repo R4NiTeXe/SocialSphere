@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multerMiddleware.js";
-import { createPost, getFeed, deletePost } from "../controllers/postController.js";
+import { createPost, getFeed, deletePost, toggleLike, addComment } from "../controllers/postController.js";
 
 const router = Router();
 
@@ -14,5 +14,17 @@ router.route("/")
 
 router.route("/:postId")
   .delete(deletePost);
+
+router.route("/:postId/like")
+  .post(toggleLike);
+
+router.route("/:postId/comments")
+  .post(addComment);
+
+router.route("/:postId/comments/:commentId/like")
+  .post(toggleCommentLike);
+
+router.route("/:postId/comments/:commentId/replies")
+  .post(addCommentReply);
 
 export default router;

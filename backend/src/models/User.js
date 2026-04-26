@@ -15,10 +15,15 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: true,
       unique: true,
-      trim: true,
       lowercase: true,
+      trim: true,
+    },
+    bio: {
+      type: String,
+      maxLength: 160,
+      default: "",
     },
     fullName: {
       type: String,

@@ -10,5 +10,6 @@ router.post("/login", login);
 // These routes need a valid login session
 router.post("/logout", verifyJWT, logout);
 router.get("/me", verifyJWT, getMe);
+router.patch("/update-profile", verifyJWT, updateProfile);
 
 export default router;
