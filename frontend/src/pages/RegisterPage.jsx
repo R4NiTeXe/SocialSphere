@@ -40,6 +40,9 @@ export default function RegisterPage() {
   const { register } = useAuth();
 
   const [form, setForm] = useState({ fullName: "", username: "", email: "", password: "" });
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [step, setStep] = useState(1); // 1: Info, 2: Avatar
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,19 +51,39 @@ export default function RegisterPage() {
     setError("");
   };
 
-  const handleSubmit = async (e) => {
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatar(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleNext = (e) => {
     e.preventDefault();
     if (!form.fullName || !form.username || !form.email || !form.password) {
       setError("Please fill in all fields");
       return;
     }
+    setStep(2);
+  };
 
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
     setLoading(true);
     try {
-      await register(form);
+      const data = new FormData();
+      data.append("fullName", form.fullName);
+      data.append("username", form.username);
+      data.append("email", form.email);
+      data.append("password", form.password);
+      if (avatar) data.append("avatar", avatar);
+
+      await register(data);
       navigate("/home");
     } catch (err) {
       setError(err?.response?.data?.message || "Registration failed. Please try again.");
+      setStep(1);
     } finally {
       setLoading(false);
     }
@@ -74,12 +97,12 @@ export default function RegisterPage() {
           <span className="brand-logo-text">SocialSphere</span>
         </Link>
         <h1 className="brand-headline">
-          Join the
-          <br />
-          community.
+          {step === 1 ? "Join the\ncommunity." : "Final step."}
         </h1>
         <p className="brand-sub">
-          Create your profile, start sharing your stories, and discover what the world is talking about.
+          {step === 1 
+            ? "Create your profile, start sharing your stories, and discover what the world is talking about."
+            : "First impressions matter! Add a profile picture so people recognize you."}
         </p>
         <div className="brand-features">
           {brandFeatures.map((f, i) => (
@@ -94,8 +117,10 @@ export default function RegisterPage() {
       <section className="auth-form-panel">
         <div className="auth-form-box">
           <div className="auth-form-header">
-            <h2 className="auth-form-title">Create account</h2>
-            <p className="auth-form-subtitle">Join thousands of others today</p>
+            <h2 className="auth-form-title">{step === 1 ? "Create account" : "Profile Picture"}</h2>
+            <p className="auth-form-subtitle">
+              {step === 1 ? "Join thousands of others today" : "Show the world who you are (or skip for now)"}
+            </p>
           </div>
 
           {error && (
@@ -109,63 +134,102 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="form-group">
-              <label className="form-label" htmlFor="fullName">Full Name</label>
-              <input
-                id="fullName"
-                name="fullName"
-                type="text"
-                placeholder="John Doe"
-                value={form.fullName}
-                onChange={handleChange}
-                className="form-input"
-              />
-            </div>
+          {step === 1 ? (
+            <form onSubmit={handleNext} noValidate>
+              <div className="form-group">
+                <label className="form-label" htmlFor="fullName">Full Name</label>
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  placeholder="John Doe"
+                  value={form.fullName}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="username">Username</label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                placeholder="johndoe"
-                value={form.username}
-                onChange={handleChange}
-                className="form-input"
-              />
-            </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="username">Username</label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="johndoe"
+                  value={form.username}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                value={form.email}
-                onChange={handleChange}
-                className="form-input"
-              />
-            </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                className="form-input"
-              />
-            </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
 
-            <button type="submit" className="btn-submit" disabled={loading}>
-              {loading ? <span className="spinner" /> : "Join now"}
-            </button>
-          </form>
+              <button type="submit" className="btn-submit">
+                Continue
+              </button>
+            </form>
+          ) : (
+            <div className="avatar-step">
+              <div className="avatar-preview-large">
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Preview" />
+                ) : (
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                )}
+              </div>
+              
+              <label className="btn-outline" style={{ marginBottom: '24px', cursor: 'pointer', display: 'inline-flex', width: '100%', justifyContent: 'center' }}>
+                <input type="file" accept="image/*" onChange={handleAvatarChange} hidden />
+                {avatar ? "Change Photo" : "Upload Photo"}
+              </label>
+
+              <div className="step-actions" style={{ display: 'flex', gap: '12px' }}>
+                <button 
+                  className="btn-ghost" 
+                  onClick={() => setStep(1)} 
+                  style={{ flex: 1 }}
+                  disabled={loading}
+                >
+                  Back
+                </button>
+                <button 
+                  className="btn-submit" 
+                  onClick={handleSubmit} 
+                  style={{ flex: 2, marginTop: 0 }}
+                  disabled={loading}
+                >
+                  {loading ? "Creating account..." : avatar ? "Finish" : "Skip & Finish"}
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="auth-switch">
             Already have an account?{" "}

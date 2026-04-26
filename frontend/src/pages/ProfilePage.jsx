@@ -12,6 +12,8 @@ export default function ProfilePage() {
     fullName: user?.fullName || "",
     bio: user?.bio || "",
   });
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || "");
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -22,6 +24,7 @@ export default function ProfilePage() {
         fullName: user.fullName,
         bio: user.bio || "",
       });
+      setAvatarPreview(user.avatar || "");
     }
   }, [user]);
 
@@ -29,11 +32,24 @@ export default function ProfilePage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatar(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await updateProfile(formData);
+      const data = new FormData();
+      data.append("fullName", formData.fullName);
+      data.append("bio", formData.bio);
+      if (avatar) data.append("avatar", avatar);
+
+      const response = await updateProfile(data);
       setUser(response.data);
       setIsEditing(false);
       setMessage("Profile updated successfully");
@@ -70,10 +86,19 @@ export default function ProfilePage() {
           <div className="profile-content">
             <div className="profile-avatar-container">
               <div className="profile-avatar-large">
-                {user?.avatar ? (
-                  <img src={user.avatar} alt={user.username} />
+                {avatarPreview ? (
+                  <img src={avatarPreview.startsWith('blob:') ? avatarPreview : `${avatarPreview}?t=${new Date().getTime()}`} alt={user?.username} />
                 ) : (
                   <span>{user?.username?.charAt(0).toUpperCase()}</span>
+                )}
+                {isEditing && (
+                  <label className="avatar-upload-overlay">
+                    <input type="file" accept="image/*" onChange={handleAvatarChange} hidden />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </label>
                 )}
               </div>
             </div>

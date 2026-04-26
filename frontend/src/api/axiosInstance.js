@@ -3,10 +3,7 @@ import axios from "axios";
 // All API calls go through this instance so we always hit the right base URL
 const api = axios.create({
   baseURL: "/api/v1",
-  withCredentials: true, // sends cookies with every request
-  headers: {
-    "Content-Type": "application/json",
-  },
+  withCredentials: true,
 });
 
 // If we have an access token in localStorage, attach it to every request

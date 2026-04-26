@@ -1,3 +1,5 @@
+import path from "path";
+import fs from "fs";
 import { User } from "../models/User.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -32,9 +34,20 @@ const register = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User already exists");
   }
 
-  const user = await User.create({ username, email, password, fullName });
-  const { accessToken, refreshToken } = await generateAndSaveTokens(user._id);
+  let avatarLocalPath = "";
+  if (req.file) {
+    avatarLocalPath = `http://localhost:5000/temp/${req.file.filename}`;
+  }
 
+  const user = await User.create({ 
+    username, 
+    email, 
+    password, 
+    fullName,
+    avatar: avatarLocalPath
+  });
+  
+  const { accessToken, refreshToken } = await generateAndSaveTokens(user._id);
   const newUser = await User.findById(user._id).select("-password -refreshToken");
 
   return res
@@ -84,9 +97,23 @@ const updateProfile = asyncHandler(async (req, res) => {
   const { fullName, bio } = req.body;
   if (!fullName) throw new ApiError(400, "Name required");
 
+  let updateData = { fullName, bio: bio || "" };
+
+  if (req.file) {
+    // Delete old avatar if it exists locally
+    if (req.user.avatar && req.user.avatar.includes("localhost:5000/temp/")) {
+      const oldFilename = req.user.avatar.split("/").pop();
+      const oldPath = path.join("public", "temp", oldFilename);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+    updateData.avatar = `http://localhost:5000/temp/${req.file.filename}`;
+  }
+
   const user = await User.findByIdAndUpdate(
     req.user._id,
-    { $set: { fullName, bio: bio || "" } },
+    { $set: updateData },
     { new: true }
   ).select("-password");
 

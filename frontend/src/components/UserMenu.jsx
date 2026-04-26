@@ -29,7 +29,7 @@ export default function UserMenu() {
       <button className="user-menu-trigger" onClick={() => setIsOpen(!isOpen)}>
         <div className="user-avatar-small">
           {user?.avatar ? (
-            <img src={user.avatar} alt={user.username} />
+            <img src={`${user.avatar}?t=${new Date().getTime()}`} alt={user.username} />
           ) : (
             <span>{user?.username?.charAt(0).toUpperCase()}</span>
           )}
